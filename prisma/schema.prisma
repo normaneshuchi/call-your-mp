@@ -106,8 +106,9 @@ model Representative {
 }
 
 enum Role {
-  MEMBEROFPARLIAMENT
+  MEMBER_OF_PARLIAMENT
   SENATOR
+  GOVERNOR
 }
 
 model Bill {
