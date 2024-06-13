@@ -1,0 +1,135 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  ADMIN
+  CONTRIBUTOR
+  USER
+}
+
+model User {
+  id            String   @id @default(cuid())
+  name          String
+  email         String
+  emailVerified DateTime
+  image         String
+  passwordHash  String
+  role          UserRole
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @default(now())
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String
+  userId       String
+  expires      DateTime
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @default(now())
+}
+
+model Country {
+  id              String           @id @unique
+  name            String
+  constituencies  Constituency[]
+  representatives Representative[]
+  counties        County[]
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @default(now())
+}
+
+model County {
+  id              String           @id @unique
+  name            String
+  constituencies  Constituency[]
+  representatives Representative[]
+  countryId       String
+  country         Country          @relation(fields: [countryId], references: [id])
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @default(now())
+}
+
+model Constituency {
+  id              String           @id @unique
+  name            String
+  countyId        String
+  county          County           @relation(fields: [countyId], references: [id])
+  representatives Representative[]
+  countryId       String
+  country         Country          @relation(fields: [countryId], references: [id])
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @default(now())
+}
+
+model Party {
+  id              String           @id @unique
+  name            String
+  abbreviation    String
+  representatives Representative[]
+  image           String
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @default(now())
+}
+
+model Representative {
+  id             String       @id @unique
+  firstName      String
+  lastName       String
+  email          String
+  phone          String
+  constituencyId String       @unique
+  constituency   Constituency @relation(fields: [constituencyId], references: [id])
+  party          Party        @relation(fields: [partyId], references: [id])
+  county         County       @relation(fields: [countyId], references: [id])
+  country        Country      @relation(fields: [countryId], references: [id])
+  votes          Vote[]
+  countryId      String
+  countyId       String
+  partyId        String
+  role           Role
+  bills          Bill[]
+  image          String
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @default(now())
+}
+
+enum Role {
+  MEMBEROFPARLIAMENT
+  SENATOR
+}
+
+model Bill {
+  id               String           @id @unique
+  name             String
+  description      String
+  dateCreated      DateTime
+  dateInParliament DateTime
+  dateInSenate     DateTime
+  broughtBy        Representative[]
+  votes            Vote[]
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @default(now())
+}
+
+model Vote {
+  id               String         @id @default(cuid())
+  billId           String
+  bill             Bill           @relation(fields: [billId], references: [id])
+  representativeId String
+  representative   Representative @relation(fields: [representativeId], references: [id])
+  vote             Int
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @default(now())
+}
