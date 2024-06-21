@@ -27,10 +27,10 @@ model UserRole {
 
 model User {
   id                 String       @id @default(uuid())
-  name               String
+  firstName          String
+  lastName           String
   email              String       @unique
   emailVerified      DateTime
-  passwordHash       String
   profile            Profile?
   roleId             Int
   role               UserRole     @relation(fields: [roleId], references: [id])

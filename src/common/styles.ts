@@ -5,3 +5,4 @@ export const PRIMARY_GRADIENT = {
   to: SECONDARY_COLOR,
   deg: 30,
 };
+export const INPUT_RADIUS = "md";

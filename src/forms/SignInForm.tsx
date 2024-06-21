@@ -1,9 +1,15 @@
 import React from "react";
 import { Form, Formik } from "formik";
 import { object, string } from "yup";
-import { Button, Text, TextInput } from "@mantine/core";
+import { Button, Text, TextInput, Title } from "@mantine/core";
+import { IconAt } from "@tabler/icons-react";
+
 import Link from "next/link";
-import { PRIMARY_GRADIENT, SECONDARY_COLOR } from "@/common/styles";
+import {
+  INPUT_RADIUS,
+  PRIMARY_GRADIENT,
+  SECONDARY_COLOR,
+} from "@/common/styles";
 
 const validators = object().shape({
   email: string()
@@ -26,9 +32,9 @@ function SignInForm() {
     >
       {({ isSubmitting, errors, isValid, handleSubmit, handleChange }) => (
         <Form onSubmit={handleSubmit}>
-          <Text c={SECONDARY_COLOR} ta="center" my="lg" fz="h3" fw="bold">
+          <Title c={SECONDARY_COLOR} my="md" fz="h2" fw="bold">
             Sign In
-          </Text>
+          </Title>
           <TextInput
             my="md"
             type="email"
@@ -36,9 +42,11 @@ function SignInForm() {
             id="email"
             label="Enter your email address"
             placeholder="neal@abc.com"
-            radius="lg"
+            radius={INPUT_RADIUS}
             error={errors.email}
             onChange={handleChange}
+            leftSection={<IconAt size={16} />}
+            leftSectionPointerEvents="none"
           />
           <Button
             variant="gradient"
