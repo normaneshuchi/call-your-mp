@@ -1,6 +1,12 @@
 import NextAuth from "next-auth";
 import EmailProvider from "next-auth/providers/email";
+import { PrismaAdapter } from "@auth/prisma-adapter";
+import { PrismaClient } from "@prisma/client";
+import type { Adapter } from "next-auth/adapters";
 
+const prisma = new PrismaClient();
+
+// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 const handler = NextAuth({
   providers: [
     EmailProvider({
@@ -15,6 +21,8 @@ const handler = NextAuth({
       from: process.env.EMAIL_FROM,
     }),
   ],
+  adapter: PrismaAdapter(prisma) as Adapter,
+  secret: "some secret",
 });
 
 export { handler as GET, handler as POST };

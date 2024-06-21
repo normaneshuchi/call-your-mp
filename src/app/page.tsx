@@ -1,11 +1,19 @@
-import Image from "next/image";
-import styles from "./page.module.css";
-import { Container } from "@mantine/core";
+import { Button, Container, Text } from "@mantine/core";
+import { getServerSession } from "next-auth";
+import Link from "next/link";
 
-export default function Home() {
+export default async function Home() {
+
+  const session = await getServerSession();
+
+
   return (
-    <Container component="main">
-      test
+    <Container fluid p={0}>
+      <Text>
+        <Button component={Link} href="/api/auth/signin">Login</Button>
+        {JSON.stringify(session)}
+      </Text>
+
     </Container>
   );
 }

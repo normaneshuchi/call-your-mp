@@ -13,26 +13,45 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum UserRole {
-  ADMIN
-  CONTRIBUTOR
-  USER
+model UserRole {
+  id          Int      @default(autoincrement())
+  name        String
+  description String
+  users       User[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@id([id])
+  @@map("user_role")
 }
 
 model User {
-  id            String   @id @default(cuid())
-  name          String
-  email         String
-  emailVerified DateTime
-  image         String
-  passwordHash  String
-  role          UserRole
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @default(now())
+  id                 String       @id @default(uuid())
+  name               String
+  email              String       @unique
+  emailVerified      DateTime
+  passwordHash       String
+  profile            Profile?
+  roleId             Int
+  role               UserRole     @relation(fields: [roleId], references: [id])
+  verifiedBusinesses Business[]
+  reviews            RepReviews[]
+  createdAt          DateTime     @default(now())
+  updatedAt          DateTime     @updatedAt
+}
+
+model Profile {
+  id        String   @id @default(uuid())
+  bio       String
+  avatar    String
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
 }
 
 model Session {
-  id           String   @id @default(cuid())
+  id           String   @id @default(uuid())
   sessionToken String
   userId       String
   expires      DateTime
@@ -41,36 +60,29 @@ model Session {
 }
 
 model Country {
-  id              String           @id @unique
+  id              String                 @id @unique
   name            String
-  constituencies  Constituency[]
   representatives Representative[]
-  counties        County[]
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @default(now())
+  areas           AreaOfRepresentation[]
+  createdAt       DateTime               @default(now())
+  updatedAt       DateTime               @default(now())
+
+  @@index([name])
 }
 
-model County {
-  id              String           @id @unique
+model AreaOfRepresentation {
+  id              String                 @id @unique @default(uuid())
   name            String
-  constituencies  Constituency[]
+  parentAreaId    String?
+  parentArea      AreaOfRepresentation?  @relation("ChildAreas", fields: [parentAreaId], references: [id])
+  childrenAreas   AreaOfRepresentation[] @relation("ChildAreas")
   representatives Representative[]
   countryId       String
-  country         Country          @relation(fields: [countryId], references: [id])
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @default(now())
-}
+  country         Country                @relation(fields: [countryId], references: [id])
+  createdAt       DateTime               @default(now())
+  updatedAt       DateTime               @default(now())
 
-model Constituency {
-  id              String           @id @unique
-  name            String
-  countyId        String
-  county          County           @relation(fields: [countyId], references: [id])
-  representatives Representative[]
-  countryId       String
-  country         Country          @relation(fields: [countryId], references: [id])
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @default(now())
+  @@index([name, countryId])
 }
 
 model Party {
@@ -83,32 +95,59 @@ model Party {
   updatedAt       DateTime         @default(now())
 }
 
-model Representative {
-  id             String       @id @unique
-  firstName      String
-  lastName       String
-  email          String
-  phone          String
-  constituencyId String       @unique
-  constituency   Constituency @relation(fields: [constituencyId], references: [id])
-  party          Party        @relation(fields: [partyId], references: [id])
-  county         County       @relation(fields: [countyId], references: [id])
-  country        Country      @relation(fields: [countryId], references: [id])
-  votes          Vote[]
-  countryId      String
-  countyId       String
-  partyId        String
-  role           Role
-  bills          Bill[]
-  image          String
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @default(now())
+model RepTenure {
+  id               String         @id @default(uuid())
+  representativeId String
+  representative   Representative @relation(fields: [representativeId], references: [id])
+  reviews          RepReviews[]
+  startDate        DateTime
+  endDate          DateTime
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
 }
 
-enum Role {
-  MEMBER_OF_PARLIAMENT
-  SENATOR
-  GOVERNOR
+model RepReviews {
+  id          String    @id @default(uuid())
+  repTenureId String
+  repTenure   RepTenure @relation(fields: [repTenureId], references: [id])
+  reviewerId  String
+  reviewer    User      @relation(fields: [reviewerId], references: [id])
+}
+
+model Representative {
+  id          String               @id @unique @default(uuid())
+  firstName   String
+  lastName    String
+  email       String
+  phone       String
+  areaOfRepId String
+  party       Party                @relation(fields: [partyId], references: [id])
+  areaOfRep   AreaOfRepresentation @relation(fields: [areaOfRepId], references: [id])
+  country     Country              @relation(fields: [countryId], references: [id])
+  votes       Vote[]
+  countryId   String
+  countyId    String
+  partyId     String
+  roleId      Int
+  role        RepresentativeRole   @relation(fields: [roleId], references: [id])
+  bills       Bill[]
+  image       String
+  business    Business[]
+  createdAt   DateTime             @default(now())
+  updatedAt   DateTime             @default(now())
+  RepTenure   RepTenure[]
+}
+
+model RepresentativeRole {
+  id              Int              @default(autoincrement())
+  name            String
+  description     String
+  representatives Representative[]
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+
+  @@id([id])
+  @@map("representative_role")
 }
 
 model Bill {
@@ -125,7 +164,7 @@ model Bill {
 }
 
 model Vote {
-  id               String         @id @default(cuid())
+  id               String         @id @default(uuid())
   billId           String
   bill             Bill           @relation(fields: [billId], references: [id])
   representativeId String
@@ -133,4 +172,43 @@ model Vote {
   vote             Int
   createdAt        DateTime       @default(now())
   updatedAt        DateTime       @default(now())
+}
+
+model BusinessSector {
+  id          String     @id @default(uuid())
+  name        String
+  description String
+  businesses  Business[]
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @default(now())
+}
+
+model BusinessStatus {
+  id         String     @id @default(uuid())
+  name       String
+  businesses Business[]
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @default(now())
+}
+
+model Business {
+  id             String           @id @default(uuid())
+  name           String
+  description    String
+  ownedBy        Representative[]
+  sector         BusinessSector[]
+  website        String
+  twitter        String
+  facebook       String
+  instagram      String
+  verifiedBy     String
+  verifiedByUser User             @relation(fields: [verifiedBy], references: [id])
+  statusId       String
+  status         BusinessStatus   @relation(fields: [statusId], references: [id])
+  foundedIn      DateTime
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+
+  @@index([name, description, website, twitter, facebook, instagram, createdAt, updatedAt])
+  @@map("business")
 }
