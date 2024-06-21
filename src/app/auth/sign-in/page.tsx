@@ -1,9 +1,15 @@
-import React from "react"
+"use client";
+
+import AuthCard from "@/components/buttons/Cards/AuthCard";
+import SignInForm from "@/forms/SignInForm";
+import React from "react";
 
 function SignIn() {
-    return (
-        <div>SignIn</div>
-    )
+  return (
+    <AuthCard>
+      <SignInForm />
+    </AuthCard>
+  );
 }
 
 export default SignIn;
