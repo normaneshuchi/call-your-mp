@@ -34,13 +34,7 @@ export default function RootLayout({
               }}
               stylesTransform={emotionTransform}
             >
-              <Container
-                bg="#FAFAFA"
-                component="main"
-                size="xl"
-                p={0}
-                mx="auto"
-              >
+              <Container bg="#FAFAFA" component="main" fluid p={0} mx="auto">
                 {children}
               </Container>
             </MantineProvider>

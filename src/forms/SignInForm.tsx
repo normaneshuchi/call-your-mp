@@ -7,6 +7,7 @@ import { IconAt } from "@tabler/icons-react";
 import Link from "next/link";
 import {
   INPUT_RADIUS,
+  PRIMARY_COLOR,
   PRIMARY_GRADIENT,
   SECONDARY_COLOR,
 } from "@/common/styles";
@@ -67,7 +68,10 @@ function SignInForm() {
             component={Link}
             href="/auth/sign-up"
           >
-            Don&apos;t have an account? <strong>Sign Up Here</strong>
+            Don&apos;t have an account?{" "}
+            <Text component="span" fz="xs" c={PRIMARY_COLOR} fw="bold">
+              Sign Up Here
+            </Text>
           </Text>
         </Form>
       )}

@@ -1,4 +1,4 @@
-import AuthCard from "@/components/buttons/Cards/AuthCard";
+import AuthCard from "@/components/Cards/AuthCard";
 import SignUpForm from "@/forms/SignUpForm";
 import React from "react";
 

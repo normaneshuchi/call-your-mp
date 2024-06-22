@@ -2,6 +2,7 @@
 
 import {
   INPUT_RADIUS,
+  PRIMARY_COLOR,
   PRIMARY_GRADIENT,
   SECONDARY_COLOR,
 } from "@/common/styles";
@@ -112,7 +113,10 @@ const SignUpForm = () => {
                 Submit
               </Button>
               <Text fz="xs" component={Link} href={"/auth/sign-in"}>
-                Have an account? <strong>Sign In Here</strong>
+                Have an account?{" "}
+                <Text component="span" fz="xs" c={PRIMARY_COLOR} fw="bold">
+                  Sign In Here
+                </Text>
               </Text>
             </GridCol>
           </Grid>

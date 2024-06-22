@@ -1,19 +1,14 @@
-import { Button, Container, Text } from "@mantine/core";
+import { Container, Text } from "@mantine/core";
 import { getServerSession } from "next-auth";
-import Link from "next/link";
+import { redirect } from "next/navigation";
 
 export default async function Home() {
-
   const session = await getServerSession();
-
+  if (!session) redirect("auth/sign-in");
 
   return (
     <Container fluid p={0}>
-      <Text>
-        <Button component={Link} href="/api/auth/signin">Login</Button>
-        {JSON.stringify(session)}
-      </Text>
-
+      <Text>{JSON.stringify(session)}</Text>
     </Container>
   );
 }
