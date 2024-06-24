@@ -6,11 +6,13 @@ import {
   PRIMARY_GRADIENT,
   SECONDARY_COLOR,
 } from "@/common/styles";
-import { sleep } from "@/common/utils";
 import { Button, Grid, GridCol, TextInput, Title, Text } from "@mantine/core";
+import { User } from "@prisma/client";
 import { IconAt } from "@tabler/icons-react";
+import axios from "axios";
 import { Form, Formik } from "formik";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { object, string, ref } from "yup";
 
 const signUpValidators = object().shape({
@@ -23,7 +25,14 @@ const signUpValidators = object().shape({
     .required("Confirm your email address")
     .oneOf([ref("email")], "Your Email addresses do not match"),
 });
+
+type UserPayload = Omit<
+  User,
+  "id" | "createdAt" | "updatedAt" | "emailVerified" | "roleId"
+>;
 const SignUpForm = () => {
+  const router = useRouter();
+
   return (
     <Formik
       initialValues={{
@@ -33,8 +42,18 @@ const SignUpForm = () => {
         confirmEmail: "",
       }}
       onSubmit={async (values) => {
-        await sleep(3000);
-        console.log(values);
+        const payload: UserPayload = {
+          email: values.email,
+          firstName: values.firstName,
+          lastName: values.lastName,
+        };
+        try {
+          const res = await axios.post("/api/user", payload);
+          console.log(res);
+          router.push("/auth/sign-in");
+        } catch (error) {
+          console.log(error);
+        }
       }}
       validateOnChange={true}
       validationSchema={signUpValidators}

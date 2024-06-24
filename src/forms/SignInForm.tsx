@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import { Form, Formik } from "formik";
 import { object, string } from "yup";
@@ -11,6 +13,7 @@ import {
   PRIMARY_GRADIENT,
   SECONDARY_COLOR,
 } from "@/common/styles";
+import axios from "axios";
 
 const validators = object().shape({
   email: string()
@@ -18,15 +21,17 @@ const validators = object().shape({
     .required("Required"),
 });
 
-const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
-
-function SignInForm() {
+function SignInForm({ csrf }: { csrf: string | undefined }) {
   return (
     <Formik
-      initialValues={{ email: "" }}
+      initialValues={{ email: "", csrfToken: csrf }}
       onSubmit={async (values) => {
-        await sleep(3000);
-        console.log(values);
+        try {
+          const res = await axios.post("/api/auth/signin/email", values);
+          console.log("res", res);
+        } catch (error) {
+          console.log("err", error);
+        }
       }}
       validateOnChange={true}
       validationSchema={validators}

@@ -30,7 +30,7 @@ model User {
   firstName          String
   lastName           String
   email              String       @unique
-  emailVerified      DateTime
+  emailVerified      DateTime?
   profile            Profile?
   roleId             Int
   role               UserRole     @relation(fields: [roleId], references: [id])

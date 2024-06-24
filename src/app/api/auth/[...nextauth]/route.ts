@@ -22,6 +22,9 @@ const handler = NextAuth({
   ],
   adapter: PrismaAdapter(prisma) as Adapter,
   secret: "some secret",
+  pages: {
+    signIn: "/auth/sign-in",
+  },
 });
 
 export { handler as GET, handler as POST };
