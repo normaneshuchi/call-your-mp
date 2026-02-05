@@ -23,7 +23,7 @@
     "@mantine/hooks": "^7.10.2",
     "@mantine/modals": "^7.10.2",
     "@mantine/nprogress": "^7.10.2",
-    "@prisma/client": "^5.15.0",
+    "@prisma/client": "^5.22.0",
     "@tabler/icons-react": "^3.6.0",
     "axios": "^1.7.2",
     "formik": "^2.4.6",
